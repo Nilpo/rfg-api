@@ -16,6 +16,7 @@ module.exports.init = function() {
   var http = require('http');
   var fs = require('fs');
   var unzip = require('unzip');
+  var cheerio = require('cheerio');
   var fstream = require('fstream');
   var mkdirp = require('mkdirp');
 
