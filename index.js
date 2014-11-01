@@ -51,7 +51,7 @@ module.exports.init = function() {
     });
   }
 
-  exports.generate_favicon_markups = function(file, html_code) {
+  exports.generate_favicon_markups = function(file, html_code, callback) {
     var content = fs.readFileSync(file);
 
     // The following lines were inspired by https://github.com/gleero/grunt-favicons and https://github.com/haydenbleasel/favicons
@@ -82,7 +82,7 @@ module.exports.init = function() {
       $.root().append(html_code);
     }
 
-    return $.html();
+    return callback($.html());
   }
 
   return exports;
