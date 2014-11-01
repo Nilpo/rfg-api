@@ -18,6 +18,7 @@ module.exports.init = function() {
   var unzip = require('unzip');
   var cheerio = require('cheerio');
   var fstream = require('fstream');
+  var tidy = require('htmltidy').tidy;
   var mkdirp = require('mkdirp');
 
   exports.file_to_base64 = function(file) {
@@ -56,33 +57,37 @@ module.exports.init = function() {
 
     // The following lines were inspired by https://github.com/gleero/grunt-favicons and https://github.com/haydenbleasel/favicons
     var $ = cheerio.load(content);
-    var html = $.html().replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ');
-    if (html === '') {
-        $ = cheerio.load('');
-    }
 
     // Removing exists favicon from HTML
     $('link[rel="shortcut icon"]').remove();
     $('link[rel="icon"]').remove();
-    $('link[rel="apple-touch-icon"]').remove();
-    $('link[rel="apple-touch-icon-precomposed"]').remove();
-    $('meta').each(function(i, elem) {
-      var name = $(this).attr('name');
-      if (name && (name === 'msapplication-TileImage' ||
-                name === 'msapplication-TileColor' ||
-                name.indexOf('msapplication-square') >= 0)) {
-        $(this).remove();
-      }
-    });
+    $('link[rel^="apple-touch-icon"]').remove();
+    $('meta[name^="msapplication"]').remove();
+    $('meta[name="mobile-web-app-capable"]').remove();
+
+    var html = $.html().replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ');
+
+    if (html === '') {
+        $ = cheerio.load('');
+    }
 
     if ($('head').length > 0) {
       $('head').append(html_code);
-    }
-    else {
+    } else {
       $.root().append(html_code);
     }
 
-    return callback($.html());
+    var opts = {
+      doctype: 'html5',
+      hideComments: false, //  multi word options can use a hyphen or "camel case"
+      indent: true,
+      wrap: 0
+    };
+
+    tidy($.html(), opts, function (err, html) {
+      if (err) throw err;
+      return callback(html);
+    });
   }
 
   return exports;
