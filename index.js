@@ -50,5 +50,39 @@ module.exports.init = function() {
     });
   }
 
+  exports.generate_favicon_markups = function(file, html_code) {
+    var content = fs.readFileSync(file);
+
+    // The following lines were inspired by https://github.com/gleero/grunt-favicons and https://github.com/haydenbleasel/favicons
+    var $ = cheerio.load(content);
+    var html = $.html().replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ');
+    if (html === '') {
+        $ = cheerio.load('');
+    }
+
+    // Removing exists favicon from HTML
+    $('link[rel="shortcut icon"]').remove();
+    $('link[rel="icon"]').remove();
+    $('link[rel="apple-touch-icon"]').remove();
+    $('link[rel="apple-touch-icon-precomposed"]').remove();
+    $('meta').each(function(i, elem) {
+      var name = $(this).attr('name');
+      if (name && (name === 'msapplication-TileImage' ||
+                name === 'msapplication-TileColor' ||
+                name.indexOf('msapplication-square') >= 0)) {
+        $(this).remove();
+      }
+    });
+
+    if ($('head').length > 0) {
+      $('head').append(html_code);
+    }
+    else {
+      $.root().append(html_code);
+    }
+
+    return $.html();
+  }
+
   return exports;
 }
