@@ -16,9 +16,8 @@ module.exports.init = function() {
   var http = require('http');
   var fs = require('fs');
   var unzip = require('unzip');
-  var cheerio = require('cheerio');
+  var metaparser = require('metaparser');
   var fstream = require('fstream');
-  var tidy = require('htmltidy').tidy;
   var mkdirp = require('mkdirp');
 
   exports.file_to_base64 = function(file) {
@@ -53,42 +52,24 @@ module.exports.init = function() {
   }
 
   exports.generate_favicon_markups = function(file, html_code, callback) {
-    var content = fs.readFileSync(file);
-
-    // The following lines were inspired by https://github.com/gleero/grunt-favicons and https://github.com/haydenbleasel/favicons
-    var $ = cheerio.load(content);
-
-    // Removing exists favicon from HTML
-    $('link[rel="shortcut icon"]').remove();
-    $('link[rel="icon"]').remove();
-    $('link[rel^="apple-touch-icon"]').remove();
-    $('link[rel="manifest"]').remove();
-    $('meta[name^="msapplication"]').remove();
-    $('meta[name="mobile-web-app-capable"]').remove();
-    $('meta[property="og:image"]').remove();
-
-    var html = $.html().replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ');
-
-    if (html === '') {
-        $ = cheerio.load('');
-    }
-
-    if ($('head').length > 0) {
-      $('head').append(html_code);
-    } else {
-      $.root().append(html_code);
-    }
-
-    var opts = {
-      doctype: 'html5',
-      hideComments: false, //  multi word options can use a hyphen or "camel case"
-      indent: true,
-      wrap: 0
-    };
-
-    tidy($.html(), opts, function (err, html) {
-      if (err) throw err;
-      return callback(html);
+    metaparser({
+      source: file,
+      add: html_code,
+      remove: [
+        'link[rel="shortcut icon"]',
+        'link[rel="icon"]',
+        'link[rel^="apple-touch-icon"]',
+        'link[rel="manifest"]',
+        'meta[name^="msapplication"]',
+        'meta[name="mobile-web-app-capable"]',
+        'meta[property="og:image"]'
+      ],
+      callback: function(error, html) {
+        if (error) {
+          throw error;
+        }
+        return callback(html);
+      }
     });
   }
 

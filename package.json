@@ -1,7 +1,7 @@
 {
   "name": "rfg-api",
   "description": "Cross-platform API helper for RealFaviconGenerator",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": "true",
   "homepage": "https://github.com/RealFaviconGenerator/rfg-api",
   "author": {
@@ -28,9 +28,8 @@
     "test": "node test.js"
   },
   "dependencies": {
-    "cheerio": "^0.17.0",
     "fstream": "^1.0.2",
-    "htmltidy": "0.0.6",
+    "metaparser": "^1.0.0",
     "mkdirp": "^0.5.0",
     "node-rest-client": "^1.0.0",
     "unzip": "^0.1.11"

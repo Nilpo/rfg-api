@@ -34,3 +34,4 @@ node_modules
 
 ### Custom ###
 test/favicons/
+test/index-test.html
