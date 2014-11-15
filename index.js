@@ -62,8 +62,10 @@ module.exports.init = function() {
     $('link[rel="shortcut icon"]').remove();
     $('link[rel="icon"]').remove();
     $('link[rel^="apple-touch-icon"]').remove();
+    $('link[rel="manifest"]').remove();
     $('meta[name^="msapplication"]').remove();
     $('meta[name="mobile-web-app-capable"]').remove();
+    $('meta[property="og:image"]').remove();
 
     var html = $.html().replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g, '').replace(/\s+/g, ' ');
 
