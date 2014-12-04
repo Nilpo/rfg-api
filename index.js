@@ -51,19 +51,34 @@ module.exports.init = function() {
     });
   }
 
-  exports.generate_favicon_markups = function(file, html_code, callback) {
+  exports.generate_favicon_markups = function(file, html_code, opts, callback) {
+    var defaultRemove = [
+      'link[rel="shortcut icon"]',
+      'link[rel="icon"]',
+      'link[rel^="apple-touch-icon"]',
+      'link[rel="manifest"]',
+      'meta[name^="msapplication"]',
+      'meta[name="mobile-web-app-capable"]',
+      'meta[property="og:image"]'
+    ],
+      add = typeof html_code === 'string' ? [html_code] : html_code,
+      remove = defaultRemove;
+
+    if (opts) {
+      if (opts.add) {
+        var optsAdd = typeof opts.add === 'string' ? [opts.add] : opts.add;
+        add = add.concat(optsAdd);
+      }
+      if (opts.remove) {
+        var optsRemove = typeof opts.remove === 'string' ? [opts.remove] : opts.remove;
+        remove = remove.concat(optsRemove);
+      }
+    }
+
     metaparser({
       source: file,
-      add: html_code,
-      remove: [
-        'link[rel="shortcut icon"]',
-        'link[rel="icon"]',
-        'link[rel^="apple-touch-icon"]',
-        'link[rel="manifest"]',
-        'meta[name^="msapplication"]',
-        'meta[name="mobile-web-app-capable"]',
-        'meta[property="og:image"]'
-      ],
+      add: add,
+      remove: remove,
       callback: function(error, html) {
         if (error) {
           throw error;
