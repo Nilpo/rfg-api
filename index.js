@@ -57,8 +57,10 @@ module.exports.init = function() {
       'link[rel="icon"]',
       'link[rel^="apple-touch-icon"]',
       'link[rel="manifest"]',
+      'link[rel="yandex-tableau-widget"]',
       'meta[name^="msapplication"]',
       'meta[name="mobile-web-app-capable"]',
+      'meta[name="theme-color"]',
       'meta[property="og:image"]'
     ],
       add = typeof html_code === 'string' ? [html_code] : html_code,
